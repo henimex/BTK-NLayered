@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Northwind.Business.Abstract;
 using Northwind.Business.Concrete;
 using Northwind.DataAccess.Concrete.EntityFramework;
+using Northwind.Entities.Concrete;
 
 namespace Northwind.WebFormsUI
 {
@@ -32,18 +33,7 @@ namespace Northwind.WebFormsUI
             ManageFilterButton();
         }
 
-        private void LoadCategories()
-        {
-            cbxCategory.DataSource = _categoryService.GetAll();
-            cbxCategory.DisplayMember = "CategoryName";
-            cbxCategory.ValueMember = "CategoryId";
-            cbxCategory.Text = "";
-        }
-
-        private void LoadProducts()
-        {
-            dgwProducts.DataSource = _productService.GetAll().ToList();
-        }
+        #region UIInteractions
 
         private void cbxCategory_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -54,7 +44,7 @@ namespace Northwind.WebFormsUI
             }
             catch (Exception exception)
             {
-
+                MessageBox.Show("Kategorileri Yüklerken Hata Oluştu Details \n{}",exception.Message);
             }
         }
 
@@ -76,10 +66,94 @@ namespace Northwind.WebFormsUI
             ManageFilterButton();
         }
 
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            _productService.Add(new Product
+            {
+                ProductName = txtPName.Text,
+                QuantityPerUnit = txtQuantity.Text,
+                UnitPrice = Convert.ToDecimal(txtPrice.Text),
+                UnitsInStock = Convert.ToInt16(txtStock.Text),
+                CategoryId = Convert.ToInt32(cbxCatId.SelectedValue)
+            });
+            MessageBox.Show("Product Saved");
+            LoadProducts();
+            ClearProductFields();
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            _productService.Update(new Product
+            {
+                ProductId = Convert.ToInt32(dgwProducts.CurrentRow.Cells[0].Value),
+                ProductName = txtPName.Text,
+                QuantityPerUnit = txtQuantity.Text,
+                UnitPrice = Convert.ToDecimal(txtPrice.Text),
+                UnitsInStock = Convert.ToInt16(txtStock.Text),
+                CategoryId = Convert.ToInt32(cbxCatId.SelectedValue)
+            });
+            MessageBox.Show("Product Updated");
+            LoadProducts();
+            ClearProductFields();
+        }
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+            _productService.Delete(new Product
+            {
+                ProductId = Convert.ToInt32(dgwProducts.CurrentRow.Cells[0].Value)
+            });
+            MessageBox.Show("Product Deleted");
+            LoadProducts();
+            ClearProductFields();
+        }
+
+        private void dgwProducts_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            txtPName.Text = dgwProducts.CurrentRow.Cells[1].Value.ToString();
+            cbxCatId.SelectedValue = dgwProducts.CurrentRow.Cells[2].Value;
+            txtPrice.Text = dgwProducts.CurrentRow.Cells[3].Value.ToString();
+            txtQuantity.Text = dgwProducts.CurrentRow.Cells[4].Value.ToString();
+            txtStock.Text = dgwProducts.CurrentRow.Cells[5].Value.ToString();
+        }
+
+        #endregion
+
+        #region UIMethods
+
         private void ManageFilterButton()
         {
             btnClearFilters.Enabled = false;
             cbxCategory.Text = "";
         }
+
+        private void ClearProductFields()
+        {
+            txtPrice.Clear();
+            txtQuantity.Clear();
+            txtStock.Clear();
+            txtPName.Clear();
+            cbxCatId.Text = "";
+        }
+
+        private void LoadProducts()
+        {
+            dgwProducts.DataSource = _productService.GetAll().ToList();
+        }
+
+        private void LoadCategories()
+        {
+            cbxCategory.DataSource = _categoryService.GetAll();
+            cbxCategory.DisplayMember = "CategoryName";
+            cbxCategory.ValueMember = "CategoryId";
+
+            cbxCatId.DataSource = _categoryService.GetAll();
+            cbxCatId.DisplayMember = "CategoryName";
+            cbxCatId.ValueMember = "CategoryId";
+
+            cbxCategory.Text = "";
+        }
+
+        #endregion
     }
 }

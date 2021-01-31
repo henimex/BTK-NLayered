@@ -9,7 +9,7 @@ using Northwind.Entities.Concrete;
 
 namespace Northwind.Business.Concrete
 {
-    public class ProductManager:IProductService
+    public class ProductManager : IProductService
     {
         private IProductDal _productDal;
 
@@ -31,6 +31,21 @@ namespace Northwind.Business.Concrete
         public List<Product> GetProductsByName(string productName)
         {
             return _productDal.GetAll(p => p.ProductName.ToLower().Contains(productName.ToLower()));
+        }
+
+        public void Add(Product product)
+        {
+            _productDal.Add(product);
+        }
+
+        public void Update(Product product)
+        {
+            _productDal.Update(product);
+        }
+
+        public void Delete(Product product)
+        {
+            _productDal.Delete(product);
         }
     }
 }

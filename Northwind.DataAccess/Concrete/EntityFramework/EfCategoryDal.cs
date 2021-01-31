@@ -8,7 +8,7 @@ using Northwind.Entities.Concrete;
 
 namespace Northwind.DataAccess.Concrete.EntityFramework
 {
-    class EfCategoryDal : EfEntityRepositoryBase<NorthwindContext,Category>,ICategoryDal
+    public class EfCategoryDal : EfEntityRepositoryBase<NorthwindContext,Category>,ICategoryDal
     {
     }
 }

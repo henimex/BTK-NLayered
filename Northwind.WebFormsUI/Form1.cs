@@ -28,6 +28,7 @@ namespace Northwind.WebFormsUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //Snipped cw Tab Tab user defined shortcuts definations
             LoadProducts();
             LoadCategories();
             ManageFilterButton();
@@ -68,17 +69,24 @@ namespace Northwind.WebFormsUI
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            _productService.Add(new Product
+            try
             {
-                ProductName = txtPName.Text,
-                QuantityPerUnit = txtQuantity.Text,
-                UnitPrice = Convert.ToDecimal(txtPrice.Text),
-                UnitsInStock = Convert.ToInt16(txtStock.Text),
-                CategoryId = Convert.ToInt32(cbxCatId.SelectedValue)
-            });
-            MessageBox.Show("Product Saved");
-            LoadProducts();
-            ClearProductFields();
+                _productService.Add(new Product
+                {
+                    ProductName = txtPName.Text,
+                    QuantityPerUnit = txtQuantity.Text,
+                    UnitPrice = Convert.ToDecimal(txtPrice.Text),
+                    UnitsInStock = Convert.ToInt16(txtStock.Text),
+                    CategoryId = Convert.ToInt32(cbxCatId.SelectedValue)
+                });
+                MessageBox.Show("Product Saved");
+                LoadProducts();
+                ClearProductFields();
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message);
+            }
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)

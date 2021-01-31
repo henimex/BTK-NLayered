@@ -1,0 +1,65 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+using Northwind.DataAccess.Abstract;
+using Northwind.Entities.Abstract;
+
+namespace Northwind.DataAccess.Concrete.EntityFramework
+{
+    public class EfEntityRepositoryBase<TContext, TEntity> : IEntityRepository<TEntity>
+        where TEntity : class, IEntity, new() // Sınırlama. Yani bu katman kullanılırken verilecek objeyi tam olarak belirlemeye yarıyor.
+        where TContext : DbContext, new()
+    {
+        public void Add(TEntity entity)
+        {
+            using (TContext context = new TContext())
+            {
+                var addedEntity = context.Entry(entity);
+                addedEntity.State = EntityState.Added;
+                context.SaveChanges();
+            }
+        }
+
+        public void Delete(TEntity entity)
+        {
+            using (TContext context = new TContext())
+            {
+                var deletedEntity = context.Entry(entity);
+                deletedEntity.State = EntityState.Deleted;
+                context.SaveChanges();
+            }
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> filter)
+        {
+            using (TContext context = new TContext())
+            {
+                return context.Set<TEntity>().SingleOrDefault(filter);
+            }
+        }
+
+        public List<TEntity> GetAll(Expression<Func<TEntity, bool>> filter = null)
+        {
+            using (TContext context = new TContext())
+            {
+                return filter == null ? // metod cagrılırken parametre uygulandımı
+                    context.Set<TEntity>().ToList() : //uygulanmamıssa tüm listei ver
+                    context.Set<TEntity>().Where(filter).ToList(); // filtre varsa ilgili sorgu sonucunu goster.
+            }
+        }
+
+        public void Update(TEntity entity)
+        {
+            using (TContext context = new TContext())
+            {
+                var updatedEntity = context.Entry(entity);
+                updatedEntity.State = EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
+    }
+}

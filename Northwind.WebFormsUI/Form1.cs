@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Northwind.Business.Abstract;
 using Northwind.Business.Concrete;
+using Northwind.Business.DependencyResolvers.Ninject;
 using Northwind.DataAccess.Concrete.EntityFramework;
 using Northwind.Entities.Concrete;
 
@@ -19,8 +20,14 @@ namespace Northwind.WebFormsUI
         public Form1()
         {
             InitializeComponent();
+            //IOC Container Kullanımından Once > Business > Dependency Resolvers > Ninjecten Önce
+            /*
             _productService = new ProductManager(new EfProductDal());
             _categoryService = new CategoryManager(new EfCategoryDal());
+            */
+            //Ninjectten Sonra
+            _productService = InstanceFactory.GetInstance<IProductService>();
+            _categoryService = InstanceFactory.GetInstance<ICategoryService>();
         }
 
         private IProductService _productService;
@@ -45,7 +52,7 @@ namespace Northwind.WebFormsUI
             }
             catch (Exception exception)
             {
-                MessageBox.Show("Kategorileri Yüklerken Hata Oluştu Details \n{}",exception.Message);
+                
             }
         }
 
